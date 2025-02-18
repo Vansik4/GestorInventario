@@ -9,3 +9,4 @@ datetime
 gcsfs
 st-files-connection
 google-cloud-documentai
+streamlit-gsheets
