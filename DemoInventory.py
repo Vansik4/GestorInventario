@@ -6,20 +6,35 @@ import requests
 from io import BytesIO
 from datetime import datetime
 
-# Configuración de credenciales
+# Leer credenciales desde el archivo .toml
+creds_dict = {
+    "type": st.secrets["connections.gcs"]["type"],
+    "project_id": st.secrets["connections.gcs"]["project_id"],
+    "private_key_id": st.secrets["connections.gcs"]["private_key_id"],
+    "private_key": st.secrets["connections.gcs"]["private_key"],
+    "client_email": st.secrets["connections.gcs"]["client_email"],
+    "client_id": st.secrets["connections.gcs"]["client_id"],
+    "auth_uri": st.secrets["connections.gcs"]["auth_uri"],
+    "token_uri": st.secrets["connections.gcs"]["token_uri"],
+    "auth_provider_x509_cert_url": st.secrets["connections.gcs"]["auth_provider_x509_cert_url"],
+    "client_x509_cert_url": st.secrets["connections.gcs"]["client_x509_cert_url"]
+}
+
+# Configurar credenciales
 scope = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive"
 ]
-
-google_service_account_info = st.secrets['google_service_account']
-
-creds = ServiceAccountCredentials.from_json_keyfile_dict(google_service_account_info, scope)
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
 
-# Abre la hoja de cálculo
-spreadsheet = client.open_by_key("1TE9IPz-7T_vcWx-MbBNGZzdVGnXkggTNWAbLbx1_39Q")
-worksheet = spreadsheet.sheet1
+# Abrir hoja de cálculo
+try:
+    spreadsheet = client.open_by_key("1TE9IPz-7T_vcWx-MbBNGZzdVGnXkggTNWAbLbx1_39Q")
+    worksheet = spreadsheet.sheet1
+except Exception as e:
+    st.error(f"Error al conectar con Google Sheets: {str(e)}")
+    st.stop()
 logs_worksheet = spreadsheet.worksheet("Logs")  # Hoja de logs
 
 # Contraseña predefinida (puedes cambiarla por una más segura)
