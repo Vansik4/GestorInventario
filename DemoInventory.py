@@ -30,8 +30,8 @@ creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
 
 # Abre la hoja de cálculo
-spreadsheet = st.secrets.connections.gcs["spreadsheet"]
-spreadsheet = client.open_by_key(spreadsheet)
+
+spreadsheet = client.open_by_key(st.secrets.connections.gcs["spreadsheet"])
 worksheet = spreadsheet.sheet1
 logs_worksheet = spreadsheet.worksheet("Logs")  # Hoja de logs
 
