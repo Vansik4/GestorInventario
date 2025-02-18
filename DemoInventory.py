@@ -1,21 +1,35 @@
 import streamlit as st
 import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 from PIL import Image
 import requests
 from io import BytesIO
 from datetime import datetime
 
-# URL del Google Sheet público
-url = "https://docs.google.com/spreadsheets/d/1TE9IPz-7T_vcWx-MbBNGZzdVGnXkggTNWAbLbx1_39Q/edit?usp=sharing"
+# Leer credenciales desde Streamlit Secrets
+creds_dict = {
+    "type": st.secrets["connections.gsheets"]["type"],
+    "project_id": st.secrets["connections.gsheets"]["project_id"],
+    "private_key_id": st.secrets["connections.gsheets"]["private_key_id"],
+    "private_key": st.secrets["connections.gsheets"]["private_key"],
+    "client_email": st.secrets["connections.gsheets"]["client_email"],
+    "client_id": st.secrets["connections.gsheets"]["client_id"],
+    "auth_uri": st.secrets["connections.gsheets"]["auth_uri"],
+    "token_uri": st.secrets["connections.gsheets"]["token_uri"],
+    "auth_provider_x509_cert_url": st.secrets["connections.gsheets"]["auth_provider_x509_cert_url"],
+    "client_x509_cert_url": st.secrets["connections.gsheets"]["client_x509_cert_url"]
+}
 
-# Extraer el ID del Google Sheet de la URL
-SPREADSHEET_ID = url.split("/")[5]
+# Configuración de credenciales
+scope = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive"
+]
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+client = gspread.authorize(creds)
 
-# Crear un cliente anónimo para acceder al Google Sheet público
-client = gspread.service_account(filename=None)  # Cliente anónimo
-
-# Abrir el Google Sheet público usando su ID
-spreadsheet = client.open_by_key(SPREADSHEET_ID)
+# Abre la hoja de cálculo
+spreadsheet = client.open_by_key("1TE9IPz-7T_vcWx-MbBNGZzdVGnXkggTNWAbLbx1_39Q")
 worksheet = spreadsheet.sheet1
 logs_worksheet = spreadsheet.worksheet("Logs")  # Hoja de logs
 
