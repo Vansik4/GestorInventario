@@ -6,3 +6,5 @@ Pillow
 google-auth
 google-auth-oauthlib
 datetime
+gcsfs
+st-files-connection
