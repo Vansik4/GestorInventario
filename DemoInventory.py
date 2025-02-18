@@ -97,7 +97,7 @@ if product_list:
         operation = st.radio("Operación:", ["Venta", "Reabastecimiento"])
     
     delta = st.number_input(
-        f"Unidades a {'restar' if operation == "Venta" else 'sumar'}:",
+        f"Unidades a {'restar' if operation == 'Venta' else 'sumar'}:",
         min_value=0,
         key="delta"
     )
