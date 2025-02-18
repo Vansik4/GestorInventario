@@ -69,7 +69,7 @@ if search_term:
                 try:
                     response = requests.get(image_url)
                     img = Image.open(BytesIO(response.content))
-                    st.image(img, caption=item["DESCRIPCION"], use_container_width=True)
+                    st.image(img, caption=item["DESCRIPCION"])
                 except Exception as e:
                     st.error(f"No se pudo cargar la imagen: {str(e)}")
             else:
