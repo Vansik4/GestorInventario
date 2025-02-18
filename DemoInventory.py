@@ -6,7 +6,7 @@ from datetime import datetime
 from streamlit_gsheets import GSheetsConnection
 
 # Crear una conexión a Google Sheets
-conn = st.connection("gcs", type="GSheetsConnection")
+conn = st.connection("gsheets", type="GSheetsConnection")
 
 # Leer datos de la hoja principal
 def get_data():
