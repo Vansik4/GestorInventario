@@ -8,4 +8,4 @@ google-auth-oauthlib
 datetime
 gcsfs
 st-files-connection
-
+streamlit_gsheets
