@@ -14,26 +14,31 @@ conn = st.connection("gsheets", type=GSheetsConnection)
 def get_data():
     """Obtiene todos los registros de la hoja."""
     df = conn.read(worksheet="Hoja1")  # Asegúrate de que el nombre de la hoja sea correcto
+    if "UNIDADES" in df.columns:
+        df["UNIDADES"] = df["UNIDADES"].fillna(0).astype(int)  # Rellenar NaN con 0 y convertir a int
     return df.to_dict(orient="records")
-
+    
 def update_stock(row_index, new_stock):
     """Actualiza el stock en una fila específica"""
     df = conn.read(worksheet="Hoja1")
-    df.at[row_index, "UNIDADES"] = new_stock
+    df.at[row_index, "UNIDADES"] = int(new_stock)
     conn.update(worksheet="Hoja1", data=df)
 
 def log_transaction(product, operation, quantity, old_stock, new_stock):
     """Registra una transacción en la hoja de logs."""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # Fecha y hora actual
     logs_df = conn.read(worksheet="Logs")  # Leer la hoja de logs
+    
+    # Convertir valores a enteros antes de registrar
     new_log = {
         "Timestamp": timestamp,
         "Producto": product,
         "Operación": operation,
-        "Cantidad": quantity,
-        "Stock Anterior": old_stock,
-        "Stock Nuevo": new_stock,
+        "Cantidad": int(quantity),
+        "Stock Anterior": int(old_stock),
+        "Stock Nuevo": int(new_stock),
     }
+    
     logs_df = logs_df.append(new_log, ignore_index=True)
     conn.update(worksheet="Logs", data=logs_df)
 
