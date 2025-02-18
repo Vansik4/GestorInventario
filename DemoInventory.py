@@ -75,11 +75,6 @@ def log_transaction(product, operation, quantity, old_stock, new_stock):
 
 # Interfaz de Streamlit
 st.title("Gestión de Inventario 📦")
-
-# Botón de refrescar
-if st.button("🔄 Refrescar datos"):
-    st.experimental_rerun()
-
 # ------------------------------------------
 # Sección 1: Filtro de stock
 # ------------------------------------------
@@ -170,7 +165,7 @@ if product_list:
                 st.success(f"Stock actualizado exitosamente! Nuevo stock: {new_stock}")
                 
                 # Forzar recarga de la aplicación
-                st.experimental_rerun()
+                
             
             except Exception as e:
                 st.error(f"Error al actualizar: {str(e)}")
