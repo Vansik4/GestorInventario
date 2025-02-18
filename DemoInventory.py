@@ -13,14 +13,14 @@ conn = st.connection("gsheets", type=GSheetsConnection)
 
 def get_data():
     """Obtiene todos los registros de la hoja."""
-    df = conn.read(worksheet="Sheet1")  # Asegúrate de que el nombre de la hoja sea correcto
+    df = conn.read(worksheet="Hoja1")  # Asegúrate de que el nombre de la hoja sea correcto
     return df.to_dict(orient="records")
 
 def update_stock(row_index, new_stock):
     """Actualiza el stock en una fila específica"""
-    df = conn.read(worksheet="Sheet1")
+    df = conn.read(worksheet="Hoja1")
     df.at[row_index, "UNIDADES"] = new_stock
-    conn.update(worksheet="Sheet1", data=df)
+    conn.update(worksheet="Hoja1", data=df)
 
 def log_transaction(product, operation, quantity, old_stock, new_stock):
     """Registra una transacción en la hoja de logs."""
