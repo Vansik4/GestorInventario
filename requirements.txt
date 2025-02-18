@@ -8,3 +8,4 @@ google-auth-oauthlib
 datetime
 gcsfs
 st-files-connection
+google-cloud-documentai
