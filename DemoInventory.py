@@ -9,7 +9,7 @@ from datetime import datetime
 PASSWORD = "ikarox"
 
 # Configuración de la conexión a Google Sheets usando streamlit_gsheets
-conn = st.experimental_connection("gsheets", type=GSheetsConnection)
+conn = st.connection("gsheets", type=GSheetsConnection)
 
 def get_data():
     """Obtiene todos los registros de la hoja."""
