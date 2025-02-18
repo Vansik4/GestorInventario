@@ -8,16 +8,16 @@ from datetime import datetime
 
 # Leer credenciales desde el archivo .toml
 creds_dict = {
-    "type": st.secrets["connections.gcs"]["type"],
-    "project_id": st.secrets["connections.gcs"]["project_id"],
-    "private_key_id": st.secrets["connections.gcs"]["private_key_id"],
-    "private_key": st.secrets["connections.gcs"]["private_key"],
-    "client_email": st.secrets["connections.gcs"]["client_email"],
-    "client_id": st.secrets["connections.gcs"]["client_id"],
-    "auth_uri": st.secrets["connections.gcs"]["auth_uri"],
-    "token_uri": st.secrets["connections.gcs"]["token_uri"],
-    "auth_provider_x509_cert_url": st.secrets["connections.gcs"]["auth_provider_x509_cert_url"],
-    "client_x509_cert_url": st.secrets["connections.gcs"]["client_x509_cert_url"]
+    "type": st.secrets["gcs"]["type"],
+    "project_id": st.secrets["gcs"]["project_id"],
+    "private_key_id": st.secrets[".gcs"]["private_key_id"],
+    "private_key": st.secrets["gcs"]["private_key"],
+    "client_email": st.secrets["gcs"]["client_email"],
+    "client_id": st.secrets["gcs"]["client_id"],
+    "auth_uri": st.secrets["gcs"]["auth_uri"],
+    "token_uri": st.secrets["gcs"]["token_uri"],
+    "auth_provider_x509_cert_url": st.secrets["gcs"]["auth_provider_x509_cert_url"],
+    "client_x509_cert_url": st.secrets[".gcs"]["client_x509_cert_url"]
 }
 
 # Configurar credenciales
