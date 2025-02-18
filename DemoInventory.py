@@ -45,7 +45,7 @@ def log_transaction(product, operation, quantity, old_stock, new_stock):
 # Interfaz de Streamlit
 st.title("Gestión de Inventario 📦")
 if st.button("🔄 Refrescar datos"):
-    st.experimental_rerun()
+    data = get_data()
 # ------------------------------------------
 # Sección 1: Filtro de stock
 # ------------------------------------------
