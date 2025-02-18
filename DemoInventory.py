@@ -5,28 +5,14 @@ from PIL import Image
 import requests
 from io import BytesIO
 from datetime import datetime
+import streamlit as st
+from google.cloud import documentai
+from google.oauth2 import service_account
 
-# Leer credenciales desde Streamlit Secrets
-creds_dict = {
-    "type": st.secrets["type"],
-    "project_id": st.secrets["project_id"],
-    "private_key_id": st.secrets["private_key_id"],
-    "private_key": st.secrets["private_key"],
-    "client_email": st.secrets["client_email"],
-    "client_id": st.secrets["client_id"],
-    "auth_uri": st.secrets["auth_uri"],
-    "token_uri": st.secrets["token_uri"],
-    "auth_provider_x509_cert_url": st.secrets["auth_provider_x509_cert_url"],
-    "client_x509_cert_url": st.secrets["client_x509_cert_url"]
-}
+credentials = service_account.Credentials.from_service_account_info(
+    st.secrets["gcs_connections"]
 
-# Configuración de credenciales
-scope = [
-    "https://www.googleapis.com/auth/spreadsheets",
-    "https://www.googleapis.com/auth/drive"
-]
-creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
-client = gspread.authorize(creds)
+client = documentai.DocumentProcessorServiceClient(credentials=credentials)
 
 # Abre la hoja de cálculo
 spreadsheet = client.open_by_key("1TE9IPz-7T_vcWx-MbBNGZzdVGnXkggTNWAbLbx1_39Q")
