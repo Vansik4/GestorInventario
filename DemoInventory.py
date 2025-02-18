@@ -44,7 +44,8 @@ def log_transaction(product, operation, quantity, old_stock, new_stock):
 
 # Interfaz de Streamlit
 st.title("Gestión de Inventario 📦")
-
+if st.button("🔄 Refrescar datos"):
+    st.experimental_rerun()
 # ------------------------------------------
 # Sección 1: Filtro de stock
 # ------------------------------------------
@@ -133,7 +134,7 @@ if product_list:
                 # Actualizar en Google Sheets
                 update_stock(row_index, new_stock)
                 st.success(f"Stock actualizado exitosamente! Nuevo stock: {new_stock}")
-                st.experimental_rerun()
+                
                 # st.experimental_rerun()
             
             except Exception as e:
