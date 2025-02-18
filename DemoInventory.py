@@ -4,6 +4,7 @@ from PIL import Image
 import requests
 from io import BytesIO
 from datetime import datetime
+import time
 
 # Contraseña predefinida (puedes cambiarla por una más segura)
 PASSWORD = "ikarox"
@@ -13,7 +14,6 @@ conn = st.connection("gsheets", type=GSheetsConnection)
 
 def get_data():
     """Obtiene todos los registros de la hoja."""
-    conn = st.connection("gsheets", type=GSheetsConnection)
     df = conn.read(worksheet="Hoja1")  # Asegúrate de que el nombre de la hoja sea correcto
     if "UNIDADES" in df.columns:
         df["UNIDADES"] = df["UNIDADES"].fillna(0).astype(int)  # Rellenar NaN con 0 y convertir a int
@@ -21,14 +21,12 @@ def get_data():
     
 def update_stock(row_index, new_stock):
     """Actualiza el stock en una fila específica"""
-    conn = st.connection("gsheets", type=GSheetsConnection)
     df = conn.read(worksheet="Hoja1")
     df.at[row_index, "UNIDADES"] = int(new_stock)
     conn.update(worksheet="Hoja1", data=df)
 
 def log_transaction(product, operation, quantity, old_stock, new_stock):
     """Registra una transacción en la hoja de logs."""
-    conn = st.connection("gsheets", type=GSheetsConnection)
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # Fecha y hora actual
     logs_df = conn.read(worksheet="Logs")  # Leer la hoja de logs
     
@@ -138,7 +136,7 @@ if product_list:
                 update_stock(row_index, new_stock)
                 st.success(f"Stock actualizado exitosamente! Nuevo stock: {new_stock}")
                 
-                # st.experimental_rerun()
+                time.sleep(2)
             
             except Exception as e:
                 st.error(f"Error al actualizar: {str(e)}")
