@@ -9,10 +9,13 @@ import streamlit as st
 from google.cloud import documentai
 from google.oauth2 import service_account
 
-credentials = service_account.Credentials.from_service_account_info(
-    st.secrets["connections.gcs"])
-
-client = documentai.DocumentProcessorServiceClient(credentials=credentials)
+# Configuración de credenciales
+scope = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive"
+]
+creds = ServiceAccountCredentials.from_json_keyfile_name("key.json", scope)
+client = gspread.authorize(creds)
 
 # Abre la hoja de cálculo
 spreadsheet = client.open_by_key("1TE9IPz-7T_vcWx-MbBNGZzdVGnXkggTNWAbLbx1_39Q")
