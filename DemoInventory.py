@@ -25,7 +25,7 @@ scope = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive"
 ]
-creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+creds = service_account.Credentials.from_service_account_info(creds_dict, scope)
 client = gspread.authorize(creds)
 
 # Abre la hoja de cálculo
