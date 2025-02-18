@@ -1,52 +1,85 @@
+import json
+import os
 import streamlit as st
-from streamlit_gsheets import GSheetsConnection
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 from PIL import Image
 import requests
 from io import BytesIO
 from datetime import datetime
-import time
+
+# Leer credenciales desde el archivo .toml
+creds_dict = {
+    "type": st.secrets.connections.gcs["type"],
+    "project_id": st.secrets.connections.gcs["project_id"],
+    "private_key_id": st.secrets.connections.gcs["private_key_id"],
+    "private_key": st.secrets.connections.gcs["private_key"],
+    "client_email": st.secrets.connections.gcs["client_email"],
+    "client_id": st.secrets.connections.gcs["client_id"],
+    "auth_uri": st.secrets.connections.gcs["auth_uri"],
+    "token_uri": st.secrets.connections.gcs["token_uri"],
+    "auth_provider_x509_cert_url": st.secrets.connections.gcs["auth_provider_x509_cert_url"],
+    "client_x509_cert_url": st.secrets.connections.gcs["client_x509_cert_url"]
+}
+
+# Configurar credenciales
+scope = [
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/drive"
+]
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+client = gspread.authorize(creds)
+
+# Abrir hoja de cálculo
+try:
+    spreadsheet = client.open_by_key("1TE9IPz-7T_vcWx-MbBNGZzdVGnXkggTNWAbLbx1_39Q")
+    worksheet = spreadsheet.sheet1
+except Exception as e:
+    st.error(f"Error al conectar con Google Sheets: {str(e)}")
+    st.stop()
 
 # Contraseña predefinida (puedes cambiarla por una más segura)
 PASSWORD = "ikarox"
 
-# Configuración de la conexión a Google Sheets usando streamlit_gsheets
-conn = st.connection("gsheets", type=GSheetsConnection)
-
+# Función para obtener datos
 def get_data():
     """Obtiene todos los registros de la hoja."""
-    df = conn.read(worksheet="Hoja1")  # Asegúrate de que el nombre de la hoja sea correcto
-    if "UNIDADES" in df.columns:
-        df["UNIDADES"] = df["UNIDADES"].fillna(0).astype(int)  # Rellenar NaN con 0 y convertir a int
-    return df.to_dict(orient="records")
-    
-def update_stock(row_index, new_stock):
-    """Actualiza el stock en una fila específica"""
-    df = conn.read(worksheet="Hoja1")
-    df.at[row_index, "UNIDADES"] = int(new_stock)
-    conn.update(worksheet="Hoja1", data=df)
+    try:
+        records = worksheet.get_all_records()  # Obtener todos los registros como diccionarios
+        for record in records:
+            if "UNIDADES" in record:
+                record["UNIDADES"] = int(record["UNIDADES"])  # Convertir UNIDADES a entero
+        return records
+    except Exception as e:
+        st.error(f"Error al leer datos: {str(e)}")
+        return []
 
+# Función para actualizar stock
+def update_stock(row_index, new_stock):
+    """Actualiza el stock en una fila específica."""
+    try:
+        worksheet.update_cell(row_index + 2, worksheet.find("UNIDADES").col, int(new_stock))  # +2 porque gspread usa índice base 1 y la primera fila es el encabezado
+    except Exception as e:
+        st.error(f"Error al actualizar stock: {str(e)}")
+
+# Función para registrar transacciones
 def log_transaction(product, operation, quantity, old_stock, new_stock):
     """Registra una transacción en la hoja de logs."""
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # Fecha y hora actual
-    logs_df = conn.read(worksheet="Logs")  # Leer la hoja de logs
-    
-    # Convertir valores a enteros antes de registrar
-    new_log = {
-        "Timestamp": timestamp,
-        "Producto": product,
-        "Operación": operation,
-        "Cantidad": int(quantity),
-        "Stock Anterior": int(old_stock),
-        "Stock Nuevo": int(new_stock),
-    }
-    
-    logs_df = logs_df.append(new_log, ignore_index=True)
-    conn.update(worksheet="Logs", data=logs_df)
+    try:
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # Fecha y hora actual
+        logs_worksheet = spreadsheet.worksheet("Logs")  # Hoja de logs
+        new_log = [timestamp, product, operation, quantity, old_stock, new_stock]
+        logs_worksheet.append_row(new_log)  # Agregar nueva fila
+    except Exception as e:
+        st.error(f"Error al registrar transacción: {str(e)}")
 
 # Interfaz de Streamlit
 st.title("Gestión de Inventario 📦")
+
+# Botón de refrescar
 if st.button("🔄 Refrescar datos"):
-    data = get_data()
+    st.experimental_rerun()
+
 # ------------------------------------------
 # Sección 1: Filtro de stock
 # ------------------------------------------
@@ -54,6 +87,7 @@ st.header("🔍 Verificar stock")
 data = get_data()
 product_list = [item["DESCRIPCION"] for item in data]
 search_term = st.selectbox("Seleccionar producto:", product_list, key="selectbox_search")
+
 if search_term:
     filtered_items = [item for item in data if search_term.lower() in item["DESCRIPCION"].lower()]
     
@@ -61,7 +95,6 @@ if search_term:
         st.subheader("Resultados de búsqueda:")
         for item in filtered_items:
             status = "✅ En stock" if item["UNIDADES"] > 0 else "❌ Agotado"
-            # Mostrar descripción y estado
             st.write(f"{status} - {item['DESCRIPCION']}")
             
             # Mostrar unidades con st.markdown (más grandes)
@@ -90,9 +123,9 @@ if search_term:
 st.header("🔄 Actualizar stock")
 data = get_data()
 product_list = [item["DESCRIPCION"] for item in data]
+
 if product_list:
-    selected_product = st.selectbox("Seleccionar producto:", product_list, key="selectbox_update")    
-    # Encontrar el ítem seleccionado
+    selected_product = st.selectbox("Seleccionar producto:", product_list, key="selectbox_update")
     selected_item = next(item for item in data if item["DESCRIPCION"] == selected_product)
     current_stock = selected_item["UNIDADES"]
     
@@ -108,7 +141,7 @@ if product_list:
         min_value=0,
         key="delta"
     )
-    # Solicitar contraseña
+    
     password = st.text_input("Ingrese la contraseña para actualizar el stock:", type="password")
     if st.button("Actualizar stock"):
         if password == PASSWORD:  # Validar contraseña
@@ -136,7 +169,8 @@ if product_list:
                 update_stock(row_index, new_stock)
                 st.success(f"Stock actualizado exitosamente! Nuevo stock: {new_stock}")
                 
-                time.sleep(2)
+                # Forzar recarga de la aplicación
+                st.experimental_rerun()
             
             except Exception as e:
                 st.error(f"Error al actualizar: {str(e)}")
@@ -150,8 +184,3 @@ else:
 # ------------------------------------------
 st.header("📋 Inventario completo")
 st.dataframe(get_data())
-
-# ------------------------------------------
-# Sección 4: Añadir nuevo producto (existente)
-# ------------------------------------------
-# ... (mantén tu código existente para añadir nuevos productos)
