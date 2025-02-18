@@ -1,17 +1,21 @@
 import streamlit as st
 import gspread
-from oauth2client.service_account import ServiceAccountCredentials
 from PIL import Image
 import requests
 from io import BytesIO
 from datetime import datetime
-import streamlit as st
-from google.cloud import documentai
-from google.oauth2 import service_account
 
+# URL del Google Sheet público
+url = "https://docs.google.com/spreadsheets/d/1TE9IPz-7T_vcWx-MbBNGZzdVGnXkggTNWAbLbx1_39Q/edit?usp=sharing"
+
+# Extraer el ID del Google Sheet de la URL
+SPREADSHEET_ID = url.split("/")[5]
+
+# Crear un cliente anónimo para acceder al Google Sheet público
 client = gspread.service_account(filename=None)  # Cliente anónimo
-# Abre la hoja de cálculo
-spreadsheet = client.open_by_key("1TE9IPz-7T_vcWx-MbBNGZzdVGnXkggTNWAbLbx1_39Q")
+
+# Abrir el Google Sheet público usando su ID
+spreadsheet = client.open_by_key(SPREADSHEET_ID)
 worksheet = spreadsheet.sheet1
 logs_worksheet = spreadsheet.worksheet("Logs")  # Hoja de logs
 
