@@ -8,16 +8,16 @@ from datetime import datetime
 
 # Leer credenciales desde Streamlit Secrets
 creds_dict = {
-    "type": st.secrets["connections.gsheets"]["type"],
-    "project_id": st.secrets["connections.gsheets"]["project_id"],
-    "private_key_id": st.secrets["connections.gsheets"]["private_key_id"],
-    "private_key": st.secrets["connections.gsheets"]["private_key"],
-    "client_email": st.secrets["connections.gsheets"]["client_email"],
-    "client_id": st.secrets["connections.gsheets"]["client_id"],
-    "auth_uri": st.secrets["connections.gsheets"]["auth_uri"],
-    "token_uri": st.secrets["connections.gsheets"]["token_uri"],
-    "auth_provider_x509_cert_url": st.secrets["connections.gsheets"]["auth_provider_x509_cert_url"],
-    "client_x509_cert_url": st.secrets["connections.gsheets"]["client_x509_cert_url"]
+    "type": st.secrets["connections.gcs"]["type"],
+    "project_id": st.secrets["connections.gcs"]["project_id"],
+    "private_key_id": st.secrets["connections.gcs"]["private_key_id"],
+    "private_key": st.secrets["connections.gcs"]["private_key"],
+    "client_email": st.secrets["connections.gcs"]["client_email"],
+    "client_id": st.secrets["connections.gcs"]["client_id"],
+    "auth_uri": st.secrets["connections.gcs"]["auth_uri"],
+    "token_uri": st.secrets["connections.gcs"]["token_uri"],
+    "auth_provider_x509_cert_url": st.secrets["connections.gcs"]["auth_provider_x509_cert_url"],
+    "client_x509_cert_url": st.secrets["connections.gcs"]["client_x509_cert_url"]
 }
 
 # Configuración de credenciales
