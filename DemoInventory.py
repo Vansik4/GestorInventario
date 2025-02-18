@@ -133,6 +133,7 @@ if product_list:
                 # Actualizar en Google Sheets
                 update_stock(row_index, new_stock)
                 st.success(f"Stock actualizado exitosamente! Nuevo stock: {new_stock}")
+                st.experimental_rerun()
                 # st.experimental_rerun()
             
             except Exception as e:
