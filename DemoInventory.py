@@ -39,7 +39,7 @@ def main():
 
     # Configuración inicial
     client = setup_credentials()
-    spreadsheet = client.open_by_key("1TE9IPz-7T_vcWx-MbBNGZzdVGnXkggTNWAbLbx1_39Q")
+    spreadsheet = client.open_by_url('https://docs.google.com/spreadsheets/d/1TE9IPz-7T_vcWx-MbBNGZzdVGnXkggTNWAbLbx1_39Q/edit?gid=367665913#gid=367665913')
     worksheet = spreadsheet.sheet1
     logs_worksheet = spreadsheet.worksheet("Logs")  # Hoja de logs
 
