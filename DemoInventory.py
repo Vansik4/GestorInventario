@@ -33,7 +33,7 @@ client = gspread.authorize(creds)
 # Abrir hoja de cálculo
 try:
     spreadsheet = client.open_by_key("1TE9IPz-7T_vcWx-MbBNGZzdVGnXkggTNWAbLbx1_39Q")
-    worksheet = spreadsheet.worksheet("Hoja 2")
+    worksheet = spreadsheet.worksheet("Hoja2")
 except Exception as e:
     st.error(f"Error al conectar con Google Sheets: {str(e)}")
     st.stop()
@@ -365,5 +365,6 @@ if product_list:
             st.error("Contraseña incorrecta. No se puede actualizar el stock.")
 else:
     st.warning("No hay productos en el inventario")
+
 
 
